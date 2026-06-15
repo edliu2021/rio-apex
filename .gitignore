@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.env
+.env.local
+*.db
+*.db-journal
+data/
+npm-debug.log*
+.DS_Store
+*.tsbuildinfo
+_disabled_routes/

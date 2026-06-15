@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maison Noir — Redesign Preview</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#0a0a0a;color:#f5f5f4}
+
+  /* Activate bar */
+  .activate-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:12px;background:linear-gradient(135deg,#6d28d9,#a78bfa);padding:12px 20px;font-size:14px;font-weight:600}
+  .activate-bar a{background:#fff;color:#18181b;padding:8px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px}
+  .activate-bar a:hover{background:#e5e5e5}
+
+  /* Hero */
+  .hero{position:relative;min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,0.3),rgba(10,10,10,0.9)),url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80") center/cover;z-index:0}
+  .hero-content{position:relative;z-index:1;max-width:640px}
+  .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;line-height:1.1;letter-spacing:-0.02em}
+  .hero .gold{background:linear-gradient(135deg,#d4a661,#b08d57);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{margin-top:16px;font-size:18px;color:#a3a3a3;line-height:1.6}
+  .stars{color:#fbbf24;font-size:14px;margin-top:20px;letter-spacing:2px}
+
+  /* Section */
+  section{max-width:960px;margin:0 auto;padding:80px 24px}
+  h2{font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em}
+  .subtitle{color:#a3a3a3;margin-bottom:40px}
+
+  /* Features grid */
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+  .feature{background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:32px}
+  .feature h3{font-size:18px;font-weight:600;margin-bottom:8px}
+  .feature p{font-size:14px;color:#a3a3a3;line-height:1.6}
+  .icon{font-size:28px;margin-bottom:12px}
+
+  /* Menu highlight */
+  .menu-section{background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:40px;margin-top:20px}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .menu-item{padding:12px 0;border-bottom:1px solid #2a2a2a}
+  .menu-item:last-child{border:none}
+  .menu-item .name{font-weight:600;font-size:15px}
+  .menu-item .desc{color:#a3a3a3;font-size:13px;margin-top:4px}
+  .menu-item .price{color:#d4a661;font-weight:600;margin-top:4px;font-size:14px}
+
+  /* Footer */
+  footer{text-align:center;padding:40px 24px;color:#a3a3a3;font-size:13px;border-top:1px solid #2a2a2a}
+
+  @media(max-width:640px){
+    .menu-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- Activate bar -->
+<div class="activate-bar">
+  Love this look? Take it live today.
+  <a href="#">Activate — $297/mo</a>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>Welcome to <span class="gold">Maison Noir</span></h1>
+    <p>Modern French cuisine in the heart of San Francisco. Seasonal tasting menus, craft cocktails, and an atmosphere that lingers.</p>
+    <div class="stars">★★★★★ 4.9 on Google · 280+ reviews</div>
+  </div>
+</div>
+
+<!-- Features -->
+<section>
+  <h2>Why guests come back</h2>
+  <p class="subtitle">Three things that set Maison Noir apart.</p>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">🍷</div>
+      <h3>Curated Wine List</h3>
+      <p>120+ labels from small-batch French and Californian vineyards, hand-picked by our sommelier.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🌿</div>
+      <h3>Seasonal Tasting Menu</h3>
+      <p>Seven courses that change every two weeks, built around what arrives from local farms that morning.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🕯️</div>
+      <h3>Private Dining</h3>
+      <p>An intimate 14-seat cellar room with a dedicated chef, perfect for celebrations and client dinners.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Menu -->
+<section>
+  <h2>From the kitchen</h2>
+  <p class="subtitle">A glimpse at this week's highlights.</p>
+  <div class="menu-section">
+    <div class="menu-grid">
+      <div>
+        <div class="menu-item">
+          <div class="name">Hamachi Crudo</div>
+          <div class="desc">Yuzu, serrano, shiso, black sesame</div>
+          <div class="price">$22</div>
+        </div>
+        <div class="menu-item">
+          <div class="name">Roasted Beet Salad</div>
+          <div class="desc">Chèvre mousse, candied walnut, aged sherry vin</div>
+          <div class="price">$18</div>
+        </div>
+        <div class="menu-item">
+          <div class="name">Duck Confit</div>
+          <div class="desc">Puy lentils, cherry gastrique, micro greens</div>
+          <div class="price">$38</div>
+        </div>
+      </div>
+      <div>
+        <div class="menu-item">
+          <div class="name">Pan-Seared Branzino</div>
+          <div class="desc">Fennel purée, saffron beurre blanc, herb oil</div>
+          <div class="price">$42</div>
+        </div>
+        <div class="menu-item">
+          <div class="name">Wagyu Bavette</div>
+          <div class="desc">Bone-marrow butter, charred shallot, frites</div>
+          <div class="price">$56</div>
+        </div>
+        <div class="menu-item">
+          <div class="name">Chocolate Fondant</div>
+          <div class="desc">Valrhona 70%, salted caramel, crème fraîche</div>
+          <div class="price">$16</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Maison Noir · San Francisco, CA · Preview generated by Jaguar AI
+</footer>
+
+</body>
+</html>
