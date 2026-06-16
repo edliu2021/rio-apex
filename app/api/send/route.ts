@@ -18,14 +18,21 @@ type Row = Prospect & {
   d_body: string;
 };
 
-async function sendOne(p: Row): Promise<{ id: number; ok: boolean; error?: string }> {
+async function sendOne(p: Row): Promise<{ id: number; ok: boolean; error?: string; dryRun?: boolean }> {
   if (!p.email) return { id: p.id, ok: false, error: "no email" };
   if (!isSendable(p.email_status)) return { id: p.id, ok: false, error: "email invalid — blocked" };
 
   const draft = { id: 0, prospect_id: p.id, subject: p.d_subject, body: p.d_body, state: "ready", edited: 0, created_at: "" } as Draft;
   const res = await sendEmail(p, draft);
   if (res.ok) {
-    recordEvent(p.id, "sent", { id: res.id, dryRun: res.dryRun });
+    // A dry run only logs the email — nothing actually left. Don't record a
+    // 'sent' event, advance the funnel, burn the draft, or consume quota, or
+    // the dashboard would show phantom sends and the draft couldn't be sent
+    // for real later.
+    if (res.dryRun) {
+      return { id: p.id, ok: true, dryRun: true };
+    }
+    recordEvent(p.id, "sent", { id: res.id });
     advanceStatus(p.id, "sent");
     getDb().prepare("UPDATE drafts SET state = 'sent' WHERE prospect_id = ?").run(p.id);
     return { id: p.id, ok: true };
@@ -87,8 +94,10 @@ export async function POST(req: Request) {
 
   const results = [];
   for (const r of rows) results.push(await sendOne(r));
-  const sent = results.filter((r) => r.ok).length;
+  // Only real (non-dry-run) sends count toward the funnel and the quota.
+  const sent = results.filter((r) => r.ok && !r.dryRun).length;
+  const dryRun = results.filter((r) => r.ok && r.dryRun).length;
   if (sent > 0) incSends(sent);
 
-  return NextResponse.json({ ok: true, sent, results });
+  return NextResponse.json({ ok: true, sent, dryRun, results });
 }

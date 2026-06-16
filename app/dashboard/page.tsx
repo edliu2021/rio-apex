@@ -16,7 +16,10 @@ export default function DashboardPage() {
 
   const bounceRate = pct(f.bounced, f.sent);
   const openRate = pct(f.opened, f.delivered);
-  const clickRate = pct(f.clicked, f.opened);
+  // Clicks are tracked by our own preview-page hits, so base click rate on
+  // sends (not opens — opens only arrive via the Resend webhook, which may
+  // not be wired yet, and clicked/0-opens is a meaningless divide-by-zero).
+  const clickRate = pct(f.clicked, f.sent);
   const replyRate = pct(f.replied, f.delivered);
 
   const steps = [
@@ -25,7 +28,7 @@ export default function DashboardPage() {
     { label: "Sent", n: f.sent, pctOfPrev: pct(f.sent, f.verified) },
     { label: "Delivered", n: f.delivered, pctOfPrev: pct(f.delivered, f.sent) },
     { label: "Opened", n: f.opened, pctOfPrev: pct(f.opened, f.delivered) },
-    { label: "Clicked", n: f.clicked, pctOfPrev: pct(f.clicked, f.opened) },
+    { label: "Clicked", n: f.clicked, pctOfPrev: pct(f.clicked, f.sent) },
   ];
   const max = Math.max(f.scraped, 1);
 
@@ -46,7 +49,7 @@ export default function DashboardPage() {
       <div className="metric-grid">
         <Metric k="Bounce rate" v={`${bounceRate.toFixed(1)}%`} gold s={bounceRate < 2 ? "✅ healthy" : "⚠️ watch this"} />
         <Metric k="Open rate" v={`${openRate}%`} gold s={`${f.opened} / ${f.delivered} delivered`} />
-        <Metric k="Click rate" v={`${clickRate}%`} gold s={`${f.clicked} / ${f.opened} opens`} />
+        <Metric k="Click rate" v={`${clickRate}%`} gold s={`${f.clicked} / ${f.sent} sent`} />
         <Metric k="Reply rate" v={`${replyRate}%`} gold s="not tracked yet — Gmail/IMAP poll coming" />
       </div>
 
@@ -69,7 +72,7 @@ export default function DashboardPage() {
           <li><b style={{ color: "var(--ink)" }}>Scraped → Verified OK</b> = how good your scrape niche is. Below 20% means try a different city or tighter industry term.</li>
           <li><b style={{ color: "var(--ink)" }}>Verified → Sent</b> = how often you flip drafts to READY and send. Below 80% means review is bottlenecking.</li>
           <li><b style={{ color: "var(--ink)" }}>Sent → Opened &gt; 30%</b> = subject is working. Below = rewrite the subject.</li>
-          <li><b style={{ color: "var(--ink)" }}>Opened → Clicked &gt; 5%</b> = body + CTA is working. Below = preview link isn&apos;t earning the click.</li>
+          <li><b style={{ color: "var(--ink)" }}>Sent → Clicked &gt; 5%</b> = body + CTA is working. Below = preview link isn&apos;t earning the click. (Opens need the Resend webhook configured.)</li>
         </ul>
       </div>
     </div>
