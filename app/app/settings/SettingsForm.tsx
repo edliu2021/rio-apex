@@ -50,6 +50,13 @@ const SECTIONS: { title: string; description: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Instagram images (Pexels)",
+    description: "Optional — real photos for the IG 9-tile grid. Blank falls back to gradient tiles.",
+    fields: [
+      { key: "PEXELS_API_KEY", label: "Pexels API key", secret: true, placeholder: "563492ad..." },
+    ],
+  },
+  {
     title: "Activate offer",
     description: "CTA bar on preview pages",
     fields: [

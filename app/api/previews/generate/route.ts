@@ -10,6 +10,20 @@ import {
 } from "@/lib/db";
 import { isAuthed } from "@/lib/auth";
 import { generatePreview } from "@/lib/generate";
+import { fetchPexelsPhotos } from "@/lib/pexels";
+
+// For IG previews, themed photos for the 9 tiles. Query from the batch's
+// industry (falls back to the business name). Empty if no PEXELS_API_KEY.
+async function igPhotosFor(p: Prospect): Promise<string[]> {
+  if (p.service !== "ig_posting") return [];
+  const batch = p.batch_id
+    ? (getDb().prepare("SELECT industry FROM batches WHERE id = ?").get(p.batch_id) as
+        | { industry: string | null }
+        | undefined)
+    : undefined;
+  const query = (batch?.industry || p.business_name || "small business").toString();
+  return fetchPexelsPhotos(query, 9);
+}
 
 function activateHref(): string {
   const url = getSetting("ACTIVATE_URL");
@@ -38,6 +52,7 @@ async function fetchSiteText(url?: string | null): Promise<string | null> {
 
 async function generateOne(p: Prospect) {
   const siteText = await fetchSiteText(p.website_url);
+  const igImages = await igPhotosFor(p);
   const html = await generatePreview({
     service: p.service,
     businessName: p.business_name,
@@ -48,6 +63,7 @@ async function generateOne(p: Prospect) {
     activateHref: activateHref(),
     activatePrice: priceFor(p.service),
     bookingHref: getSignature().bookingLink || null,
+    igImages,
   });
   getDb().prepare("UPDATE prospects SET preview_html = ? WHERE id = ?").run(html, p.id);
   advanceStatus(p.id, "generated");

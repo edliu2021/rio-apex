@@ -10,7 +10,7 @@ export type SendResult = {
 };
 
 export function previewUrl(prospect: Prospect): string {
-  const base = getSetting("APP_BASE_URL") || "http://localhost:3000";
+  const base = (getSetting("APP_BASE_URL") || "http://localhost:3000").replace(/\/+$/, "");
   if (prospect.preview_code && prospect.preview_slug) {
     return `${base}/p/${prospect.preview_code}/${prospect.preview_slug}`;
   }

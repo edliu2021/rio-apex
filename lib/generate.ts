@@ -11,6 +11,7 @@ export type GenerateInput = {
   activateHref: string;
   activatePrice: string; // e.g. "$297/mo"
   bookingHref?: string | null; // cal.com / Calendly — primary CTA
+  igImages?: string[]; // optional Pexels photo URLs for the 9 IG tiles
 };
 
 const SYSTEM_WEB = `You are a senior web designer. You produce a single, self-contained, production-quality HTML homepage redesign for a small business.
@@ -29,7 +30,8 @@ Hard requirements:
 - Return ONE complete HTML document only. No markdown, no code fences, no commentary.
 - All CSS in a single <style> tag in <head>. No external CSS/JS/font files, no frameworks, no <script>.
 - The grid MUST contain EXACTLY NINE post tiles arranged 3 columns × 3 rows (a 3x3 Instagram grid). Number them 1/9 through 9/9. Do NOT produce 6 — produce all NINE. On mobile, collapse to 1 column.
-- Each tile is a square with a CSS gradient background, a category label, an overlaid post caption idea, and a short hashtag line. No real images — use tasteful CSS gradients and typography.
+- Each tile is a square. If a list of IMAGE URLS is provided, set each tile's background to its photo (background-image, background-size:cover, background-position:center) in order, and add a dark gradient overlay (e.g. linear-gradient(transparent, rgba(0,0,0,.55))) so the caption text stays legible. If NO image URLs are provided, use tasteful CSS gradient backgrounds instead.
+- Each tile shows a category label, an overlaid post caption idea, and a short hashtag line.
 - Use ONLY the real business facts provided. Captions should be specific to this business and niche.
 - Any count you mention in copy must say "9" / "nine" (e.g. "Nine scroll-stopping concepts"), never six.
 - Include a short hero line at top ("A month of posts for {business}, ready to go") and a closing CTA section.
@@ -51,10 +53,18 @@ function buildUserPrompt(input: GenerateInput): string {
 
   const task =
     input.service === "ig_posting"
-      ? "Create the mock Instagram feed of 6 post concepts for this business."
+      ? "Create the mock 3x3 Instagram grid of 9 post concepts for this business."
       : "Redesign the homepage for this business.";
 
-  return `${task}\n\n${facts}${grounding}\n\nReturn the full HTML document now.`;
+  const images =
+    input.service === "ig_posting" && input.igImages && input.igImages.length
+      ? `\n\nIMAGE URLS (use these as the 9 tile backgrounds, in order):\n${input.igImages
+          .slice(0, 9)
+          .map((u, i) => `${i + 1}. ${u}`)
+          .join("\n")}`
+      : "";
+
+  return `${task}\n\n${facts}${grounding}${images}\n\nReturn the full HTML document now.`;
 }
 
 // Guaranteed sticky CTA bar — injected regardless of model output so the
@@ -172,13 +182,17 @@ function placeholderIg(input: GenerateInput): string {
     "Q&A: your questions answered",
     "Book your spot this week 📅",
   ];
-  const tiles = gradients
-    .map(
-      (g, i) => `<div class="tile" style="background:${g}">
-      <div class="cap">${captions[i]}</div>
+  const tiles = captions
+    .map((cap, i) => {
+      const img = input.igImages && input.igImages[i];
+      const bg = img
+        ? `background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.55)),url('${img}');background-size:cover;background-position:center`
+        : `background:${gradients[i % gradients.length]}`;
+      return `<div class="tile" style="${bg}">
+      <div class="cap">${cap}</div>
       <div class="tag">#${(input.city ?? "local").toString().toLowerCase().replace(/[^a-z]/g, "")} #smallbusiness</div>
-    </div>`
-    )
+    </div>`;
+    })
     .join("\n");
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
